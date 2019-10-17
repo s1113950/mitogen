@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
-import os
 import io
+import os
+import sys
 
 from ansible import constants as C
 from ansible.module_utils import six
@@ -14,6 +15,13 @@ try:
     pprint = __import__(os.environ['NICE_STDOUT_PPRINT'])
 except KeyError:
     pprint = None
+
+DefaultModule = callback_loader.get('default', class_only=True)
+DOCUMENTATION = getattr(
+    sys.modules[DefaultModule.__module__],
+    'DOCUMENTATION',
+    None
+)
 
 
 def printi(tio, obj, key=None, indent=0):
@@ -50,8 +58,6 @@ def printi(tio, obj, key=None, indent=0):
     else:
         write('%r', obj)
 
-
-DefaultModule = callback_loader.get('default', class_only=True)
 
 class CallbackModule(DefaultModule):
     def _dump_results(self, result, *args, **kwargs):
